@@ -11,7 +11,7 @@ llm:
   # 主力 LLM。OpenAI 兼容接口。
   primary:
     provider: deepseek           # deepseek | qwen | openai | local
-    model: deepseek-chat
+    model: deepseek-v4-pro
     base_url: https://api.deepseek.com/v1
     api_key_env: DEEPSEEK_API_KEY
     temperature: 0.7
@@ -20,7 +20,7 @@ llm:
   # 写日记专用（用稍微更"反思"一点的设置）
   diary:
     provider: deepseek
-    model: deepseek-chat
+    model: deepseek-v4-pro
     base_url: https://api.deepseek.com/v1
     api_key_env: DEEPSEEK_API_KEY
     temperature: 0.85
@@ -29,7 +29,7 @@ llm:
   # 记忆整理专用：低温，要求输出 JSON schema。
   memory:
     provider: deepseek
-    model: deepseek-chat
+    model: deepseek-v4-pro
     base_url: https://api.deepseek.com/v1
     api_key_env: DEEPSEEK_API_KEY
     temperature: 0.2

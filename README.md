@@ -3,7 +3,7 @@
 > 一个和你一起生长的数字生命
 > 不是助手，不是工具，是阿宝，是伙伴
 
-设计文档见 `abao_design_v3.md`。本仓库是 v3 设计的实现。
+设计文档见 `abao_design_v3.md`。服务器部署见 `DEPLOYMENT.md`。本仓库是 v3 设计的实现。
 
 ## 当前阶段：Phase 1（核心生命）
 
@@ -70,24 +70,26 @@ Embedding 使用 `config/providers.yaml` 的 `embedding` 配置，当前默认 D
 
 设计速度：连续两周每天聊一个话题 → 相关维度漂移 ~0.012（已用 `scripts/simulate.py` 验证）。详见 `personality/dimension.py`。
 
-## 安装与运行
+## 本地安装与运行
 
 ```bash
 # Python 3.11+
-python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
+python3 -m venv venv
+source venv/bin/activate
+python -m pip install -r requirements.txt
 
 # 配置 API 密钥
 cp .env.example .env
 # 编辑 .env：
 # DEEPSEEK_API_KEY 用于对话、日记、事件摘要
 # DASHSCOPE_API_KEY 用于 embedding 语义召回
+# ABAO_OWNER_TOKEN 用于保护手机/PWA HTTP API
 
 # 启动 CLI 对话
 python -m adapters.cli
 
 # 启动手机/PWA 入口
-ABAO_OWNER_TOKEN=自己设一个长一点的token python -m uvicorn server.app:app --host 0.0.0.0 --port 8000
+python -m uvicorn server.app:app --host 0.0.0.0 --port 8020
 ```
 
 CLI 命令：
@@ -98,7 +100,7 @@ CLI 命令：
 
 无 API key 也能运行（LLM 调用降级为占位文本，便于开发和测试）。
 
-手机端访问 `http://你的服务器:8000`。正式部署请放到 HTTPS 后面；iPhone Safari 打开后可通过分享菜单添加到主屏幕。
+手机端访问 `http://你的服务器:8020`。更完整的 Ubuntu/systemd/GitHub 部署流程见 `DEPLOYMENT.md`。
 
 ## 测试
 

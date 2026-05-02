@@ -1,0 +1,14 @@
+# Phase 1 最小依赖
+# Phase 2+ 会加入 qdrant-client / mem0ai / resemblyzer / openwakeword / faster-whisper / edge-tts
+
+pyyaml>=6.0
+python-dotenv>=1.0
+openai>=1.30          # OpenAI 兼容客户端，DeepSeek/Qwen 都走这个
+pydantic>=2.5
+rich>=13.7            # CLI 美化
+fastapi>=0.110
+uvicorn>=0.27
+pytest>=8.0           # 测试
+
+# 可选：早期就加，方便后续接入
+numpy>=1.26

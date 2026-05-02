@@ -1,0 +1,69 @@
+# LLM 与 Embedding 服务配置
+#
+# 实际密钥从 .env 读取（参见 .env.example）。
+# 这里只写"用谁"和"模型名"。
+
+app:
+  display_name: 阿宝
+  slug: abao
+
+llm:
+  # 主力 LLM。OpenAI 兼容接口。
+  primary:
+    provider: deepseek           # deepseek | qwen | openai | local
+    model: deepseek-chat
+    base_url: https://api.deepseek.com/v1
+    api_key_env: DEEPSEEK_API_KEY
+    temperature: 0.7
+    max_tokens: 800
+
+  # 写日记专用（用稍微更"反思"一点的设置）
+  diary:
+    provider: deepseek
+    model: deepseek-chat
+    base_url: https://api.deepseek.com/v1
+    api_key_env: DEEPSEEK_API_KEY
+    temperature: 0.85
+    max_tokens: 400
+
+  # 记忆整理专用：低温，要求输出 JSON schema。
+  memory:
+    provider: deepseek
+    model: deepseek-chat
+    base_url: https://api.deepseek.com/v1
+    api_key_env: DEEPSEEK_API_KEY
+    temperature: 0.2
+    max_tokens: 600
+
+embedding:
+  provider: dashscope             # dashscope（阿里）| openai | local
+  model: text-embedding-v3
+  base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+  api_key_env: DASHSCOPE_API_KEY
+  dim: 1024
+
+# 漂移与日记参数
+# 这些是经过设计的常量，调整前请理解 personality/dimension.py 的数学。
+drift:
+  base_rate: 0.005               # 漂移单位（文档 v2 数值）
+  shock_rate: 0.05               # 冲击事件 10 倍
+  threshold: 1.0                 # buffer 跨阈值才漂移
+  buffer_decay_per_day: 0.97     # 每天衰减 3%
+  shock_emotion_threshold: 0.75  # 情绪强度大于此值视为冲击
+  momentum_smoothing: 0.7        # momentum 的指数平滑系数
+  reverse_momentum_penalty: 0.5  # 漂移方向与 momentum 相反时打折
+  value_floor: 0.05
+  value_ceiling: 0.95
+
+diary:
+  # 哪些事件类型会触发日记（只列当前真正会触发的，未来加新事件时同步更新这里和 state_monitor.py）
+  triggers:
+    - personality_drift
+    - personality_shock
+    - long_silence_breaking
+  # 一天内同一触发类型最多写几次（防泛滥）
+  max_per_type_per_day: 2
+
+memory:
+  # 每 N 个用户 turn 整理一次事件记忆；0 表示关闭。
+  event_consolidate_every_turns: 6

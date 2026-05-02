@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">数字生命光点</title>
+  <desc id="desc">珊瑚到青绿渐变的柔和生命光点，核心光晕缓慢呼吸。</desc>
+
+  <defs>
+    <radialGradient id="background" cx="48%" cy="42%" r="76%">
+      <stop offset="0%" stop-color="#fff7e8"/>
+      <stop offset="54%" stop-color="#faf7ef"/>
+      <stop offset="100%" stop-color="#eaf5ef"/>
+    </radialGradient>
+
+    <radialGradient id="halo" cx="42%" cy="36%" r="64%">
+      <stop offset="0%" stop-color="#fff9d8"/>
+      <stop offset="22%" stop-color="#ff8a72"/>
+      <stop offset="58%" stop-color="#42d7bd"/>
+      <stop offset="100%" stop-color="#00a884" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="cell" cx="39%" cy="34%" r="69%">
+      <stop offset="0%" stop-color="#fffdf0"/>
+      <stop offset="18%" stop-color="#ffd37a"/>
+      <stop offset="45%" stop-color="#ff6b5a"/>
+      <stop offset="74%" stop-color="#00c7ad"/>
+      <stop offset="100%" stop-color="#007b70"/>
+    </radialGradient>
+
+    <radialGradient id="core" cx="44%" cy="38%" r="58%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="36%" stop-color="#fff3bd"/>
+      <stop offset="72%" stop-color="#ff7b65"/>
+      <stop offset="100%" stop-color="#ff7b65" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feColorMatrix
+        in="blur"
+        type="matrix"
+        values="1 0 0 0 0.08
+                0 1 0 0 0.05
+                0 0 1 0 0.03
+                0 0 0 0.9 0"
+        result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="coreBloom" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <clipPath id="cellClip">
+      <circle cx="256" cy="256" r="126"/>
+    </clipPath>
+  </defs>
+
+  <style>
+    .breath {
+      transform-origin: 256px 256px;
+      animation: breathe 4.8s ease-in-out infinite;
+    }
+
+    .core {
+      transform-origin: 256px 256px;
+      animation: corePulse 3.2s ease-in-out infinite;
+    }
+
+    .spark {
+      animation: wink 3.6s ease-in-out infinite;
+    }
+
+    .spark:nth-of-type(2) { animation-delay: .4s; }
+    .spark:nth-of-type(3) { animation-delay: .9s; }
+    .spark:nth-of-type(4) { animation-delay: 1.3s; }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(.985); opacity: .92; }
+      50% { transform: scale(1.025); opacity: 1; }
+    }
+
+    @keyframes corePulse {
+      0%, 100% { transform: scale(.92); opacity: .76; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+
+    @keyframes wink {
+      0%, 100% { opacity: .35; }
+      50% { opacity: .9; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .breath, .core, .spark { animation: none; }
+    }
+  </style>
+
+  <rect width="512" height="512" rx="112" fill="url(#background)"/>
+
+  <g class="breath">
+    <circle cx="256" cy="256" r="176" fill="url(#halo)" opacity=".48" filter="url(#softGlow)"/>
+    <circle cx="256" cy="256" r="126" fill="url(#cell)" filter="url(#softGlow)"/>
+
+    <g clip-path="url(#cellClip)" opacity=".42">
+      <path d="M151 260c39-26 72-32 104-18 35 16 64 10 106-28" fill="none" stroke="#fff9dc" stroke-width="8" stroke-linecap="round"/>
+      <path d="M165 304c36-17 66-19 94-4 31 17 58 13 90-17" fill="none" stroke="#005e58" stroke-opacity=".32" stroke-width="6" stroke-linecap="round"/>
+      <path d="M203 167v38m106-21v34m-88 121v32m103-78v42" fill="none" stroke="#ffffff" stroke-opacity=".42" stroke-width="7" stroke-linecap="round"/>
+    </g>
+
+    <circle class="core" cx="247" cy="238" r="58" fill="url(#core)" filter="url(#coreBloom)"/>
+    <circle cx="247" cy="238" r="18" fill="#fffdf2"/>
+
+    <g fill="#fffdf2">
+      <circle class="spark" cx="181" cy="196" r="6"/>
+      <circle class="spark" cx="332" cy="184" r="5"/>
+      <circle class="spark" cx="355" cy="310" r="7"/>
+      <circle class="spark" cx="202" cy="343" r="4"/>
+    </g>
+
+    <g fill="none" stroke-linecap="round" stroke-width="7">
+      <path d="M176 232h18" stroke="#fff7d8" opacity=".74"/>
+      <path d="M319 354h24" stroke="#fff7d8" opacity=".62"/>
+      <path d="M352 236h17" stroke="#073f3d" opacity=".25"/>
+      <path d="M217 151h21" stroke="#073f3d" opacity=".18"/>
+    </g>
+  </g>
+</svg>

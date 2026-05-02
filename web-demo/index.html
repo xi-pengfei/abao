@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f7f4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="阿宝">
+  <title>阿宝</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="stylesheet" href="./app.css">
+</head>
+<body>
+  <main class="app-shell" aria-label="阿宝对话">
+    <header class="topbar">
+      <div class="identity">
+        <div class="mark" aria-hidden="true">A</div>
+        <div>
+          <h1>阿宝</h1>
+          <p id="statusText">已连接 · 正在听</p>
+        </div>
+      </div>
+      <button class="icon-button" id="settingsButton" type="button" aria-label="设置" title="设置">
+        <span aria-hidden="true">⚙</span>
+      </button>
+    </header>
+
+    <section class="memory-strip" aria-label="当前上下文">
+      <span>名字：席朋飞</span>
+      <span>事件记忆开启</span>
+      <span>语义召回开启</span>
+    </section>
+
+    <section class="chat" id="chat" aria-live="polite">
+      <article class="message abao">
+        <div class="message-meta">阿宝</div>
+        <p>在。我记得你最近一直在把我从一个想法慢慢打磨成能陪你说话的东西。今天想先试界面，还是继续聊记忆内核？</p>
+      </article>
+      <article class="message user">
+        <div class="message-meta">你</div>
+        <p>先看看手机上聊天的感觉。</p>
+      </article>
+      <article class="message abao">
+        <div class="message-meta">阿宝</div>
+        <p>好。这个版本先保持安静一点，像一个私人对话空间，不做客服感。等你觉得气质对了，我们再接真实后端和流式接口。</p>
+      </article>
+    </section>
+
+    <form class="composer" id="composer">
+      <textarea id="input" rows="1" placeholder="和阿宝说点什么" aria-label="输入消息"></textarea>
+      <button class="send-button" type="submit" aria-label="发送" title="发送">
+        <span aria-hidden="true">↑</span>
+      </button>
+    </form>
+  </main>
+
+  <aside class="settings-panel" id="settingsPanel" aria-hidden="true">
+    <div class="settings-sheet">
+      <div class="sheet-header">
+        <h2>连接</h2>
+        <button class="icon-button" id="closeSettings" type="button" aria-label="关闭" title="关闭">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <label>
+        <span>Server URL</span>
+        <input value="https://abao.example.com" inputmode="url">
+      </label>
+      <label>
+        <span>Access Token</span>
+        <input value="••••••••••••" type="password">
+      </label>
+      <button class="plain-action" type="button">测试连接</button>
+    </div>
+  </aside>
+
+  <script src="./app.js"></script>
+</body>
+</html>

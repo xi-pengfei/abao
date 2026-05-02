@@ -1,0 +1,366 @@
+:root {
+  color-scheme: light;
+
+  /* Option A：暖白 + 青绿 + 珊瑚 */
+  --paper:        #faf7ef;   /* 背景暖白 */
+  --surface:      #ffffff;
+  --ink:          #202322;   /* 主文字 */
+  --muted:        #7a8880;   /* 次要文字 */
+  --line:         #e4ece7;   /* 分割线 */
+  --soft:         #f0f7f3;   /* 浅绿底 */
+
+  --accent:       #00a884;   /* 青绿主色 */
+  --accent-dim:   #008f6e;   /* 按压态 */
+  --accent-ink:   #ffffff;
+
+  --coral:        #ff6b5a;   /* 珊瑚强调 */
+  --amber:        #ffb000;   /* 状态指示 */
+
+  --user-bg:      #eaf7f2;   /* 用户消息背景 */
+  --user-border:  #c5e8db;
+
+  --shadow:       0 20px 56px rgba(0, 0, 0, 0.10);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;          /* 整页不滚，只有 chat 区滚 */
+  margin: 0;
+}
+
+body {
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+button, textarea, input { font: inherit; }
+
+/* ── App shell：全屏固定，grid 三行 ── */
+.app-shell {
+  height: 100svh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: min(100%, 760px);
+  margin: 0 auto;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+/* ── 顶栏固定 ── */
+.topbar {
+  padding: calc(env(safe-area-inset-top) + 14px) 18px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: relative;
+  z-index: 1;
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* ── 水母动画 ── */
+@keyframes jelly-float {
+  0%, 100% { transform: translateY(0px) rotate(-4deg); }
+  50%       { transform: translateY(-5px) rotate(-2deg); }
+}
+@keyframes jelly-breathe {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.45; transform: scale(1.3); }
+}
+.jelly-body {
+  transform-box: fill-box;
+  transform-origin: 40px 42px;
+  animation: jelly-float 4.5s ease-in-out infinite;
+}
+.jelly-core {
+  transform-box: fill-box;
+  transform-origin: 36px 26px;
+  animation: jelly-breathe 3.4s ease-in-out infinite;
+}
+
+h1, h2, p { margin: 0; }
+
+h1 {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.identity p {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* 状态小圆点 */
+.identity p::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--amber);
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+.identity p.connected::before { background: var(--accent); }
+.identity p.thinking::before  { background: var(--coral); animation: pulse 1s infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.icon-button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.icon-button:hover { color: var(--ink); border-color: var(--muted); }
+
+/* ── Chat 区：唯一可滚动区域 ── */
+.chat {
+  overflow-y: auto;
+  min-height: 0;             /* grid 中必须，否则不收缩 */
+  padding: 20px 18px 24px;
+  overscroll-behavior: contain;
+}
+
+/* 空状态 */
+.empty-state {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.empty-state p {
+  color: var(--muted);
+  font-size: 15px;
+}
+.empty-state.hidden { display: none; }
+
+/* 消息 */
+.message {
+  max-width: 88%;
+  margin-bottom: 20px;
+}
+
+.message-meta {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.message p {
+  font-size: 15.5px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* 阿宝消息：纯段落，无气泡 */
+.message.abao { margin-right: auto; }
+.message.abao p { color: var(--ink); }
+
+/* 用户消息：浅绿气泡，右对齐 */
+.message.user {
+  margin-left: auto;
+  text-align: right;
+}
+.message.user p {
+  display: inline-block;
+  text-align: left;
+  background: var(--user-bg);
+  border: 1px solid var(--user-border);
+  border-radius: 12px 12px 3px 12px;
+  padding: 10px 13px;
+  color: var(--ink);
+}
+
+/* ── 输入栏固定 ── */
+.composer {
+  padding: 11px 14px calc(env(safe-area-inset-bottom) + 12px);
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 1fr 44px;
+  gap: 10px;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+textarea {
+  resize: none;
+  min-height: 44px;
+  max-height: 130px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 13px;
+  outline: none;
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.45;
+  transition: border-color 0.15s;
+}
+textarea:focus { border-color: var(--accent); }
+
+/* 发送按钮用珊瑚色 */
+.send-button {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--coral);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  flex-shrink: 0;
+  align-self: end;
+}
+.send-button:hover  { background: #e85a49; }
+.send-button:active { transform: scale(0.93); }
+
+/* ── 设置面板 ── */
+.settings-panel {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(10, 18, 15, 0.38);
+  padding: 14px;
+  z-index: 100;
+}
+.settings-panel.open { display: flex; }
+
+.settings-sheet {
+  width: min(100%, 520px);
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 18px 18px calc(env(safe-area-inset-bottom) + 18px);
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.sheet-header h2 { font-size: 16px; font-weight: 700; }
+
+label { display: block; margin: 12px 0; }
+label span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+input {
+  width: 100%;
+  height: 42px;
+  border: 1.5px solid var(--line);
+  border-radius: 9px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: var(--paper);
+  outline: none;
+  transition: border-color 0.15s;
+}
+input:focus { border-color: var(--accent); }
+
+.settings-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.plain-action {
+  width: 100%;
+  height: 42px;
+  border: 1.5px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 14px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.plain-action:hover { border-color: var(--muted); }
+
+.plain-action.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+.plain-action.primary:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent-dim);
+}
+
+/* iPhone PWA 安装提示 */
+.pwa-hint {
+  margin-top: 16px;
+  padding: 10px 12px;
+  background: var(--soft);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* ── 桌面端：居中卡片 ── */
+@media (min-width: 760px) {
+  body {
+    display: grid;
+    place-items: center;
+    padding: 28px;
+    overflow: auto;
+    background: var(--paper);
+  }
+
+  .app-shell {
+    height: min(860px, calc(100svh - 56px));
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+}

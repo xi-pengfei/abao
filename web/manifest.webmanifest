@@ -1,0 +1,17 @@
+{
+  "name": "阿宝",
+  "short_name": "阿宝",
+  "description": "一个私人数字生命实例的移动入口",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf7ef",
+  "theme_color": "#faf7ef",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

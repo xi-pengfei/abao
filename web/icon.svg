@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <!-- background -->
+  <circle cx="40" cy="40" r="38" fill="#ff6b5a"/>
+
+  <!-- off-center core glow -->
+  <circle cx="36" cy="26" r="9"   fill="rgba(255,255,255,0.16)"/>
+  <circle cx="36" cy="26" r="5.5" fill="rgba(255,255,255,0.26)"/>
+  <circle cx="36" cy="26" r="2.8" fill="rgba(255,255,255,0.92)"/>
+
+  <!-- asymmetric bell dome -->
+  <path d="M 16 48 C 11 28 20 11 37 10 C 55 9 68 25 66 46"
+        fill="rgba(255,255,255,0.10)"
+        stroke="rgba(255,255,255,0.88)"
+        stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- irregular frilly edge -->
+  <path d="M 16 48 Q 21 54 27 47 Q 32 40 37 48 Q 44 57 51 46 Q 57 37 62 46 Q 64 50 66 46"
+        fill="none" stroke="rgba(255,255,255,0.60)" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- internal deconstructed lines -->
+  <path d="M 37 10 L 34 38"              stroke="rgba(255,255,255,0.32)" stroke-width="0.9" fill="none"/>
+  <path d="M 24 19 C 20 28 19 36 20 46"  stroke="rgba(255,255,255,0.18)" stroke-width="0.7" fill="none"/>
+  <path d="M 58 20 L 62 34"              stroke="rgba(255,255,255,0.22)" stroke-width="0.8" fill="none"/>
+
+  <!-- tentacles: deliberately unruly -->
+  <path d="M 21 50 C 16 62 22 70 15 74" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="0.9" stroke-linecap="round"/>
+  <path d="M 30 51 C 27 57 29 61 26 63" fill="none" stroke="rgba(255,255,255,0.80)" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M 40 52 C 38 62 43 69 39 76" fill="none" stroke="rgba(255,255,255,0.50)" stroke-width="1"   stroke-dasharray="3 4" stroke-linecap="round"/>
+  <path d="M 60 48 C 67 51 70 55 67 60" fill="none" stroke="rgba(255,255,255,0.65)" stroke-width="1.1" stroke-linecap="round"/>
+  <path d="M 51 50 C 56 61 50 68 45 71" fill="none" stroke="rgba(255,255,255,0.70)" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M 45 51 C 44 59 46 64 44 69" fill="none" stroke="rgba(255,255,255,0.30)" stroke-width="0.7" stroke-linecap="round"/>
+
+  <!-- isolated flotsam dot -->
+  <circle cx="54" cy="66" r="1.2" fill="rgba(255,255,255,0.45)"/>
+</svg>

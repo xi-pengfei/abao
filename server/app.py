@@ -91,8 +91,8 @@ try:
     app_config = yaml.safe_load((ROOT / "config" / "providers.yaml").read_text(encoding="utf-8")).get("app", {})
 except Exception:
     app_config = {}
-DISPLAY_NAME = app_config.get("display_name", "阿宝")
-APP_SLUG = app_config.get("slug", "abao")
+DISPLAY_NAME = os.environ.get("ABAO_DISPLAY_NAME", "").strip() or app_config.get("display_name", "阿宝")
+APP_SLUG = os.environ.get("ABAO_APP_SLUG", "").strip() or app_config.get("slug", "abao")
 
 app = FastAPI(title=DISPLAY_NAME)
 

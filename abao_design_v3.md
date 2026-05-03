@@ -320,6 +320,15 @@ owner_token
 
 没有用户表，没有朋友账号，没有多租户隔离。隔离边界是部署实例本身。
 
+实例自己的显示名和短标识属于部署私有配置，放在 `.env`：
+
+```env
+ABAO_DISPLAY_NAME=阿宝
+ABAO_APP_SLUG=abao
+```
+
+仓库里的 `config/providers.yaml` 只提供默认值。多实例部署时不要为了改名去改它，否则后续 `git pull` 会反复出现本地修改。
+
 ### 5.3 认证
 
 第一版只做 owner token：

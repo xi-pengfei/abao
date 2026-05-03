@@ -84,6 +84,7 @@ cp .env.example .env
 # DEEPSEEK_API_KEY 用于对话、日记、事件摘要
 # DASHSCOPE_API_KEY 用于 embedding 语义召回
 # ABAO_OWNER_TOKEN 用于保护手机/PWA HTTP API
+# ABAO_DISPLAY_NAME / ABAO_APP_SLUG 用于设置当前实例名称
 
 # 启动 CLI 对话
 python -m adapters.cli

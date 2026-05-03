@@ -85,9 +85,13 @@ DEEPSEEK_API_KEY=你的DeepSeekKey
 DASHSCOPE_API_KEY=你的DashScopeKey
 
 ABAO_OWNER_TOKEN=你自己设置的一串长token
+ABAO_DISPLAY_NAME=阿宝
+ABAO_APP_SLUG=abao
 ```
 
 `ABAO_OWNER_TOKEN` 用来保护手机网页接口。网页设置里的 `Access Token` 填这个值本身，不要加 `Bearer`，前端会自动加。
+
+`ABAO_DISPLAY_NAME` 和 `ABAO_APP_SLUG` 用来设置当前实例在网页和接口里的名字。多实例部署时优先改 `.env`，不要为了改名字去改 `config/providers.yaml`。
 
 如果 `.env` 没有配置 `ABAO_OWNER_TOKEN`，后端不会鉴权，任何能访问这个地址的人都可以调用你的接口。不建议公网裸奔。
 
@@ -381,10 +385,12 @@ cp .env.example .env
 nano .env
 ```
 
-第二个实例的 `.env` 应该使用不同的 token，也可以使用不同模型 key：
+第二个实例的 `.env` 应该使用不同的 token 和实例名，也可以使用不同模型 key：
 
 ```env
 ABAO_OWNER_TOKEN=另一个长token
+ABAO_DISPLAY_NAME=朋友的阿宝
+ABAO_APP_SLUG=abao-friend1
 ```
 
 创建第二个服务：
@@ -436,10 +442,9 @@ friend1.example.com -> 127.0.0.1:8021
 .env
 data/
 config/birth_traits.yaml
-config/providers.yaml
 ```
 
-其中 `.env` 和 `data/` 不应该提交到 GitHub，也不应该被升级覆盖。`config/` 里的文件如果你改过，也要小心合并。
+其中 `.env` 和 `data/` 不应该提交到 GitHub，也不应该被升级覆盖。实例显示名、slug、owner token 都放 `.env`；不要为了多实例改名去改 `config/providers.yaml`。
 
 升级前先停服务：
 
@@ -475,7 +480,7 @@ python -m pip install -r requirements.txt
 diff -u .env.example .env
 ```
 
-如果新版本更新了 `config/providers.yaml` 或 `config/birth_traits.yaml`，优先人工合并。你的个性、模型配置和 app 名称都可能在这里。
+如果新版本更新了 `config/providers.yaml` 或 `config/birth_traits.yaml`，优先人工合并。模型配置、漂移参数和出生设定可能在这里；实例名应放在 `.env`。
 
 如果版本说明要求重建索引，可以执行：
 

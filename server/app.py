@@ -34,6 +34,10 @@ class HistoryMessage(BaseModel):
     created_at: str
 
 
+class AbaoBusy(Exception):
+    pass
+
+
 class AbaoRuntime:
     def __init__(self) -> None:
         self._lock = Lock()
@@ -42,13 +46,20 @@ class AbaoRuntime:
             data_dir=ROOT / "data",
         ))
 
-    def stream(self, text: str) -> Iterator[str]:
-        with self._lock:
-            yield from self._abao.converse_stream(text, speaker="user")
+    def begin_stream(self, text: str) -> Iterator[str]:
+        if not self._lock.acquire(blocking=False):
+            raise AbaoBusy()
+
+        def locked_stream() -> Iterator[str]:
+            try:
+                yield from self._abao.converse_stream(text, speaker="user")
+            finally:
+                self._lock.release()
+
+        return locked_stream()
 
     def history(self, limit: int) -> list[HistoryMessage]:
-        with self._lock:
-            records = self._abao.memory.store.recent_conversations(limit=limit)
+        records = self._abao.memory.store.recent_conversations(limit=limit)
         records.reverse()
         messages = []
         for r in records:
@@ -65,6 +76,10 @@ class AbaoRuntime:
                     created_at=r.created_at,
                 ))
         return messages
+
+    @property
+    def busy(self) -> bool:
+        return self._lock.locked()
 
     def close(self) -> None:
         self._abao.shutdown()
@@ -89,7 +104,12 @@ def shutdown() -> None:
 
 @app.get("/api/health")
 def health() -> dict:
-    return {"ok": True, "name": APP_SLUG, "display_name": DISPLAY_NAME}
+    return {
+        "ok": True,
+        "name": APP_SLUG,
+        "display_name": DISPLAY_NAME,
+        "busy": runtime.busy,
+    }
 
 
 @app.get("/api/history")
@@ -111,9 +131,16 @@ def chat_stream(
     text = req.text.strip()
     if not text:
         raise HTTPException(status_code=400, detail="text is required")
+    try:
+        stream = runtime.begin_stream(text)
+    except AbaoBusy:
+        raise HTTPException(
+            status_code=409,
+            detail="我还在回上一句话，等我一下。",
+        )
 
     def events() -> Iterator[str]:
-        for chunk in runtime.stream(text):
+        for chunk in stream:
             yield _sse({"type": "delta", "text": chunk})
         yield _sse({"type": "done"})
 

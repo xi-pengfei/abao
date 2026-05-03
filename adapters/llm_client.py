@@ -12,12 +12,15 @@
 from __future__ import annotations
 
 import os
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterator, Optional
 
 import yaml
 from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -28,6 +31,7 @@ class LLMConfig:
     api_key: Optional[str]
     temperature: float = 0.7
     max_tokens: int = 800
+    request_timeout: float = 45.0
 
 
 def _load_env(env_path: Optional[Path] = None) -> None:
@@ -51,6 +55,7 @@ def load_config(providers_yaml: Path, role: str = "primary") -> LLMConfig:
         api_key=api_key,
         temperature=cfg.get("temperature", 0.7),
         max_tokens=cfg.get("max_tokens", 800),
+        request_timeout=cfg.get("request_timeout", 45.0),
     )
 
 
@@ -66,6 +71,7 @@ class LLMClient:
                 self._client = OpenAI(
                     api_key=config.api_key,
                     base_url=config.base_url,
+                    timeout=config.request_timeout,
                 )
             except ImportError:
                 pass
@@ -94,7 +100,8 @@ class LLMClient:
                 max_tokens=max_tokens if max_tokens is not None else self.config.max_tokens,
             )
             return resp.choices[0].message.content
-        except Exception:
+        except Exception as exc:
+            logger.warning("LLM chat failed: %s", exc)
             return None
 
     def complete(self, prompt: str, **kwargs) -> Optional[str]:
@@ -126,5 +133,6 @@ class LLMClient:
                 delta = chunk.choices[0].delta.content
                 if delta:
                     yield delta
-        except Exception:
+        except Exception as exc:
+            logger.warning("LLM stream failed: %s", exc)
             return

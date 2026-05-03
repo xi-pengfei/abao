@@ -12,9 +12,11 @@ const serverInput   = document.querySelector("#serverUrl");
 const tokenInput    = document.querySelector("#accessToken");
 const saveSettings  = document.querySelector("#saveSettings");
 const testConnection= document.querySelector("#testConnection");
+const sendButton    = document.querySelector(".send-button");
 
 /* ── State ── */
 let displayName = "阿宝";
+let isSending = false;
 
 /* ── Init ── */
 const settings = loadSettings();
@@ -45,7 +47,7 @@ async function initFromHealth() {
       document.title = displayName;
       input.placeholder = `和${displayName}说点什么`;
     }
-    setStatus("已连接", "connected");
+    setStatus(data.busy ? "正在回复" : "已连接", data.busy ? "thinking" : "connected");
   } catch {
     setStatus("未连接", "");
   }
@@ -89,19 +91,26 @@ composer.addEventListener("submit", async (e) => {
   e.preventDefault();
   const text = input.value.trim();
   if (!text) return;
+  if (isSending) {
+    appendMessage("abao", displayName, "我还在回上一句话，等我一下。");
+    return;
+  }
 
   hideEmptyState();
   appendMessage("user", "你", text);
   input.value = "";
   resizeInput();
   setStatus("正在想", "thinking");
+  setSending(true);
 
   try {
     await streamFromServer(text);
     setStatus("已连接", "connected");
   } catch (err) {
-    appendMessage("abao", displayName, `连接失败：${err.message}`);
+    appendMessage("abao", displayName, err.message);
     setStatus("连接失败", "");
+  } finally {
+    setSending(false);
   }
 });
 
@@ -135,6 +144,12 @@ function setStatus(text, cls) {
   statusText.className = cls || "";
 }
 
+function setSending(active) {
+  isSending = active;
+  sendButton.disabled = active;
+  input.disabled = active;
+}
+
 function hideEmptyState() {
   emptyState.classList.add("hidden");
 }
@@ -160,7 +175,6 @@ function appendMessage(kind, name, text) {
 }
 
 async function streamFromServer(text) {
-  const target = appendMessage("abao", displayName, "");
   const cfg    = loadSettings();
 
   const res = await fetch(`${cfg.serverUrl}/api/chat/stream`, {
@@ -172,11 +186,13 @@ async function streamFromServer(text) {
     body: JSON.stringify({ text }),
   });
 
-  if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
+  if (!res.ok || !res.body) throw new Error(await friendlyError(res));
 
+  const target = appendMessage("abao", displayName, "");
   const reader  = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
+  let hasText = false;
 
   while (true) {
     const { value, done } = await reader.read();
@@ -189,11 +205,28 @@ async function streamFromServer(text) {
       if (!line) continue;
       const payload = JSON.parse(line.slice(6));
       if (payload.type === "delta") {
+        hasText = true;
         target.textContent += payload.text;
         scrollToBottom();
       }
     }
   }
+  if (!hasText) {
+    target.textContent = "我刚才有点卡住了。你再说一遍，我重新接住。";
+  }
+}
+
+async function friendlyError(res) {
+  let detail = "";
+  try {
+    const data = await res.json();
+    detail = data.detail || "";
+  } catch {
+    detail = "";
+  }
+  if (res.status === 409) return detail || "我还在回上一句话，等我一下。";
+  if (res.status === 401) return "口令好像没对上。你检查一下 Access Token。";
+  return detail || `连接有点不稳，服务器返回了 ${res.status}。`;
 }
 
 async function testServer() {
@@ -204,7 +237,7 @@ async function testServer() {
     const res = await fetch(`${cfg.serverUrl}/api/health`);
     if (res.ok) {
       const data = await res.json();
-      setStatus(`已连接 · ${data.display_name || ""}`, "connected");
+      setStatus(data.busy ? "正在回复" : `已连接 · ${data.display_name || ""}`, data.busy ? "thinking" : "connected");
     } else {
       setStatus(`异常 ${res.status}`, "");
     }

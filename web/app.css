@@ -252,6 +252,15 @@ textarea:focus { border-color: var(--accent); }
 }
 .send-button:hover  { background: #e85a49; }
 .send-button:active { transform: scale(0.93); }
+.send-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}
+
+textarea:disabled {
+  opacity: 0.72;
+}
 
 /* ── 设置面板 ── */
 .settings-panel {

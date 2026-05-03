@@ -251,7 +251,39 @@ sudo systemctl stop abao
 sudo systemctl reset-failed abao
 ```
 
-## 9. 可选：Nginx + HTTPS
+## 9. 并发和卡住时的处理
+
+阿宝是个人实例，不是多人聊天室。为了保护记忆和性格状态，同一个实例同一时间只处理一条聊天请求。
+
+如果你在手机、电脑、主屏 PWA 里同时打开同一个实例，第二条消息会收到温和提示：
+
+```text
+我还在回上一句话，等我一下。
+```
+
+这不是故障，是为了避免多个入口同时写记忆，或者一个模型请求卡住后把后面的消息无限排队。
+
+如果页面显示已连接，但一直不说话，先重启对应实例：
+
+```bash
+sudo systemctl restart abao
+```
+
+如果是第二个实例：
+
+```bash
+sudo systemctl restart abao-friend1
+```
+
+然后看日志：
+
+```bash
+sudo journalctl -u abao -n 100 --no-pager
+```
+
+如果日志里出现 `LLM stream failed` 或 `LLM chat failed`，优先检查模型 API key、余额、模型名、网络和供应商状态。
+
+## 10. 可选：Nginx + HTTPS
 
 如果你只是自己临时使用，`IP + 8020` 可以先跑。但如果要长期放在手机主屏，HTTPS 更稳，PWA 能力也更完整。
 
@@ -323,7 +355,7 @@ https://你的域名
 
 腾讯云安全组需要放行 `80` 和 `443`。如果已经改用 Nginx，`8020` 不再需要对公网开放。
 
-## 10. 同一台服务器部署多个阿宝
+## 11. 同一台服务器部署多个阿宝
 
 每个阿宝应该有独立目录、独立 `.env`、独立 `data/`、独立 systemd 服务和独立端口。
 
@@ -340,7 +372,7 @@ https://你的域名
 ```bash
 sudo mkdir -p /opt/abao-friend1
 sudo chown -R $USER:$USER /opt/abao-friend1
-git clone https://github.com/你的用户名/你的仓库名.git /opt/abao-friend1
+git clone https://github.com/xi-pengfei/abao.git /opt/abao-friend1
 cd /opt/abao-friend1
 python3 -m venv venv
 source venv/bin/activate
@@ -396,7 +428,7 @@ friend1.example.com -> 127.0.0.1:8021
 
 不要让多个实例共用同一个 `data/` 目录，否则记忆、性格和日记会混在一起。
 
-## 11. 从 GitHub 升级
+## 12. 从 GitHub 升级
 
 运行时最重要的数据在：
 
@@ -473,7 +505,7 @@ curl -s http://127.0.0.1:8020/api/health
 
 确认没问题后，再停旧服务、复制或迁移 `data/`。这样可以最大限度避免把现有记忆弄坏。
 
-## 12. 不要覆盖的东西
+## 13. 不要覆盖的东西
 
 部署和升级时尤其注意：
 
